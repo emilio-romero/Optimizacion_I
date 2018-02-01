@@ -85,8 +85,10 @@ int es_spd(char *cfile){
   if(N1>meps){
     printf("La matriz dada no es simetrica\n");
     printf("Se debe utilizar la matriz (A+A^T)/2\n");
+    return(0);
   } else{
     printf("La matriz es simetrica, hurra!\n");
+    return(1);
   }
   /*Liberacion de memoria*/
   for(int i=0;i<nr;i++) free(AA[i]); 
