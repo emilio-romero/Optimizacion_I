@@ -8,7 +8,7 @@ double N1;
 double **A=readMatrix("simetricaDefPos12x12.bin",&nr,&nc);
 double **L=(double**)malloc(nr*sizeof(double*));
 for(int i=0;i<nr;i++) L[i]=(double*)calloc(nc,sizeof(double));
-Cholesky(A,nr,L);
+Chol(A,nr,L);
 printf("%dx%d\n",nr,nc);
 es_spd("simetricaDefPos12x12.bin");
 Norma_1_matriz(A,nr,nc,&N1);

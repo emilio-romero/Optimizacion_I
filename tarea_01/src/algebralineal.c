@@ -99,7 +99,7 @@ return 1;}
 * esta funcion devuelve la matriz L de la factorizacion
 */
 
-int Cholesky(double **A, int n, double **out){
+int Chol(double **A, int n, double **out){
   double restakj=0; 
   double restaikj=0; 
   out[0][0]=sqrt(A[0][0]);

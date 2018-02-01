@@ -22,8 +22,8 @@ int Norma_1_matriz(double **A, int nr, int nc, double *out);
 //= Soluciondores  
 //========================
 
-int Cholesky(double **A, int n, double **out);
-
+int Chol(double **A, int n, double **out);
+int Cholesky(char *cfile, double**out);
 
 
 //=========================
