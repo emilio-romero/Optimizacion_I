@@ -12,7 +12,10 @@
 double punto(double *a, double *b, int n);
 int matriz_vector_mul(double **A, double *b, int m, int n, double *out);
 int matriz_mul(double **A, double **B, int l, int m, int n, double **out);
-
+int matriz_suma(double **A, double **B, int nr, int nc, double **out);
+int matriz_resta(double **A, double **B, int nr, int nc, double **out);
+int matriz_copiar(double **original, int nr, int nc, double **copia);
+int matriz_transponer(double **original, int nr, int nc, double **copia);
 //=========================
 //= Normas 
 //========================
