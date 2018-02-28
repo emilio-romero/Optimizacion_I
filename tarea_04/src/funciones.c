@@ -1,5 +1,9 @@
 #include "funciones.h"
-
+/*
+ *
+ *Rosenbrock, funcion, gradiente y Hessiano
+ * 
+ */
 double Rosenbrock(double *x, int n){
 double aux=0;
 double sum1=0, sum2=0;
@@ -9,6 +13,20 @@ double sum1=0, sum2=0;
   }
   aux=100*sum1 + sum2;
 return(aux);}
+
+int gRosenbrock(double *x, int n, double *out){
+  for(int i=1;i<(n-1);i++){
+    out[i]=-400*x[i]*(x[i+1]-x[i]*x[i])-2*(1-x[i])+200*(x[i]-x[i-1]*x[i-1]);
+  }
+  out[0]=-400*(x[1]-x[0]*x[0])*x[0]-2*(1-x[0]);
+  out[n-1]=200*(x[n-1]-x[n-2]*x[n-2]);
+return(1);}
+
+/*
+ *
+ *Wood, funcion, gradiente y Hessiano
+ * 
+ */
 
 double Wood(double *x, int n){
   double aux=0; 

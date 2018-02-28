@@ -11,6 +11,37 @@ return(suma);
 }
 
 /*
+ * Suma de vectores 
+*/
+int vector_suma(double *x, double *y, int n, double *out){
+  for(int i=0;i<n;i++)
+    out[i]=x[i]+y[i];
+return(1);}
+
+/*
+ * Resta de vectores 
+*/
+int vector_resta(double *x, double *y, int n, double *out){
+  for(int i=0;i<n;i++)
+    out[i]=x[i]-y[i];
+return(1);}
+
+/*
+ *  Vector por escalar
+*/
+int vector_escalar(double a, double *x, int n, double *out){
+  for(int i=0;i<n;i++)
+    out[i]=a*x[i];
+return(1);}
+
+/*
+ * Copia un vector en otro 
+*/
+int vector_copiar(double *original, int n, double *copia){
+  for(int i=0;i<n;i++)
+    copia[i]=original[i];
+return(1);}
+/*
 * Producto de una matriz por un vector, devuelve un vector 
 * m es para filas de la matriz y n para las columnas de la matriz
 * n tambien son las filas del vector
@@ -106,6 +137,37 @@ int Norma_1_matriz(double **A, int nr, int nc, double *out){
   }
 *out=max; 
 }
+
+
+/*
+ * Calcula la norma 1 de un vector := suma(abs(x_i))
+ */
+double Norma_1_vector(double *x, int n){
+  double aux=0; 
+  for(int i=0;i<n;i++)
+    aux+=fabs(x[i]);
+return(aux);} 
+
+/*
+ * Calcula la norma 2 de un vector := sqrt(suma(x_i^2))
+ */
+double Norma_2_vector(double *x, int n){
+  double aux=0; 
+  for(int i=0;i<n;i++)
+    aux+=x[i]*x[i];
+  aux=sqrt(aux);
+return(aux);} 
+
+/*
+ * Calcula la norma infinito de un vector := max |x_i|
+ */
+double Norma_inf_vector(double *x, int n){
+  double aux=fabs(x[0]); 
+  for(int i=1;i<n;i++){
+    if(aux<fabs(x[i]))
+      aux=fabs(x[i]);
+  } 
+return(aux);} 
 
 int es_spd(char *cfile){
   int nr, nc; 

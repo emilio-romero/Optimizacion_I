@@ -10,4 +10,11 @@ int writeMatrix(double **mat, int nr, int nc, char *cfile);
 int writeData(double **mat, int nr, int nc, char *cfile); 
 void printMatrix(double **mat, int nr, int nc);
 void freeMatrix(double **mat);
+/*
+ * Lectura y escritura de archivos de texto plano
+ * (dat, txt ...)
+ * */
+int escribirVector(double *vec, int dim, char *cfile);
+double *leerVector(char *cfile, int *nr);
+
 #endif 

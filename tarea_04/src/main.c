@@ -4,17 +4,19 @@
 int main(int argc, char *argv[]){
 
 char inicio[30]; 
-int miter; 
-double tolg, tolx, tolf;
-readParams(argc,argv,inicio,&miter,&tolg,&tolx,&tolf);
+Condiciones tol; 
+readParams(argc,argv,inicio,&tol.maxiter,&tol.tolg,&tol.tolx,&tol.tolf);
+
 double *mx=(double*)malloc(2*sizeof(double));
-mx[0]=0.5; mx[1]=0.7;
+mx[0]=3; mx[1]=-2.0;
+double *xast; 
 
-printf("El vector inicial se extraera de: %s.\n",inicio);
-printf("Las iteraciones maximas son %d\nLa tol. del gradiente %lf, de la x %lf y de la \
-funcion %lf\n",miter, tolg, tolx, tolf);
+xast=SteepestDescent(Rosenbrock,gRosenbrock,mx,2,tol);
 
-printf("Prueba rosenbrock f(x)=%lf\n",Rosenbrock(mx,2));
+printf("%lf,%lf \n",xast[0],xast[1]);
+
+/*Liberacion de memoria*/
+free(mx);
 
 printf("Su programa ha terminado\n");
 return 0;}

@@ -114,8 +114,28 @@ fclose(f1);
 return(1);}
 
 
+/*
+ * Funciones para archivos de texto plano
+ *
+ */
+int escribirVector(double *vec, int dim, char *cfile){
+FILE *f1=fopen(cfile,"w"); 
 
+if(!f1) return(1); 
+fwrite(&dim, sizeof(int),1,f1);
+fwrite(vec,sizeof(double),dim,f1);
+fclose(f1); 
+return(0);
+}
 
-
-
-
+double *leerVector(char *cfile, int *nr){
+double *vec; 
+FILE *f1=fopen(cfile,"r");
+if(!f1) return(NULL); 
+fread(nr,sizeof(int),1,f1); 
+vec=(double*)malloc((*nr)*sizeof(double));
+if(vec==NULL) return(NULL); 
+fread(vec,sizeof(double),*nr,f1); 
+fclose(f1); 
+return(vec);
+}
