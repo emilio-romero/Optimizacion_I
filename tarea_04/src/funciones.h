@@ -2,10 +2,20 @@
 #define FUNCIONES_H
 #include "algebralineal.h"
 
-double Rosenbrock(double *x, int n);
-int gRosenbrock(double *x, int n, double *out);
+typedef struct{
+  int n; 
+  double *x; 
+  double param1; 
+  double param2;
+} datos; 
 
-double Wood(double *x, int n);
-double SmoothingModel(double *x, int n,double lambda);
+
+double Rosenbrock(datos md);
+int gRosenbrock(double *x, int n, double *out);
+int hRosenbrock(double *x, int n, double **out);
+double Wood(datos md);
+int gWood(double *x, int n, double *out);
+int hWood(double *x, int n, double **out);
+double SmoothingModel(datos md);
 
 #endif 

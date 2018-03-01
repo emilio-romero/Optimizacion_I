@@ -2,12 +2,13 @@
 #include <stdlib.h> 
 #include <string.h> 
 
-void readParams(int argc, char *argv[],char *cfile, int *maxiter, double *tg, double *tx, double *tf){
+void readParams(int argc, char *argv[],char *cfile, int *maxiter, double *tg, double *tx, double *tf,char *msg){
 if(argc>1) strcpy(cfile,argv[1]);
 if(argc>2) *maxiter=atoi(argv[2]);
 if(argc>3) *tg=atof(argv[3]);
 if(argc>4) *tx=atof(argv[4]);
 if(argc>5) *tf=atof(argv[5]);
+if(argc>6) strcpy(msg,argv[6]);
 }
 
 //Lectura del vector en el archivo cfile 
@@ -122,8 +123,10 @@ int escribirVector(double *vec, int dim, char *cfile){
 FILE *f1=fopen(cfile,"w"); 
 
 if(!f1) return(1); 
-fwrite(&dim, sizeof(int),1,f1);
-fwrite(vec,sizeof(double),dim,f1);
+fprintf(f1,"%d\n",dim);
+for(int i=0;i<dim;i++)
+  fprintf(f1,"%lf\n",vec[i]);
+
 fclose(f1); 
 return(0);
 }
@@ -132,10 +135,21 @@ double *leerVector(char *cfile, int *nr){
 double *vec; 
 FILE *f1=fopen(cfile,"r");
 if(!f1) return(NULL); 
-fread(nr,sizeof(int),1,f1); 
+fscanf(f1,"%d",nr); //printf("%d\n",*nr); 
 vec=(double*)malloc((*nr)*sizeof(double));
-if(vec==NULL) return(NULL); 
-fread(vec,sizeof(double),*nr,f1); 
+//if(vec==NULL) return(NULL); 
+for(int i=0;i<(*nr);i++){
+  fscanf(f1,"%lf",vec+i);
+ // printf("%lf\n",vec[i]);
+  }
 fclose(f1); 
 return(vec);
 }
+
+
+
+
+
+
+
+
