@@ -5,17 +5,19 @@
 typedef struct{
   int n; 
   double *x; 
+  double *y;
   double param1; 
   double param2;
 } datos; 
 
 
 double Rosenbrock(datos md);
-int gRosenbrock(double *x, int n, double *out);
-int hRosenbrock(double *x, int n, double **out);
+int gRosenbrock(datos md, double *out);
+int hRosenbrock(datos md, double **out);
 double Wood(datos md);
-int gWood(double *x, int n, double *out);
-int hWood(double *x, int n, double **out);
+int gWood(datos md, double *out);
+int hWood(datos md, double **out);
 double SmoothingModel(datos md);
-
+int gSModel(datos md, double *out);
+int hSModel(datos md, double **out);
 #endif 

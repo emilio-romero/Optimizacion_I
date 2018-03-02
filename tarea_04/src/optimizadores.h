@@ -14,7 +14,7 @@ typedef struct{
 
 
 
-double *SteepestDescent(double(*f)(datos),int(*g)(double*,int,double*),datos mid, Condiciones micond);
+double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,double**),datos mid, Condiciones micond);
 
 
 /*Tamanios de paso*/

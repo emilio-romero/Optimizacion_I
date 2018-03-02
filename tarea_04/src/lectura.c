@@ -146,7 +146,28 @@ fclose(f1);
 return(vec);
 }
 
+double *leeryk(char *cfile, int *nr, int col){
+  double *vec; 
+FILE *f1=fopen(cfile,"r");
+if(!f1) return(NULL); 
+fscanf(f1,"%d",nr); //printf("%d\n",*nr); 
+vec=(double*)malloc((*nr)*sizeof(double));
 
+
+for(int i=0;i<(*nr);i++){
+  fscanf(f1,"%lf",vec+i);
+}
+if(col==1){ 
+  fclose(f1);
+  return(vec);} 
+if(col==2){
+  for(int i=0;i<(*nr);i++){
+    fscanf(f1,"%lf",vec+i);
+  }
+} 
+fclose(f1);
+return(vec);
+}
 
 
 
