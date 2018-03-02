@@ -313,5 +313,11 @@ double **AA=(double**)malloc((grado+1)*sizeof(double*));
   free(A); free(At); free(AA);
 return(aux);}
 
-
-
+/*
+ *Miscelanea
+ *
+ */
+double randx(){
+  double aux; 
+  aux=rand()/((double)RAND_MAX); 
+return(aux);}

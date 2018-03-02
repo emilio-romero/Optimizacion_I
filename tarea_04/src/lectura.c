@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h> 
-
 void readParams(int argc, char *argv[],char *cfile, int *maxiter, double *tg, double *tx, double *tf,char *msg){
 if(argc>1) strcpy(cfile,argv[1]);
 if(argc>2) *maxiter=atoi(argv[2]);
@@ -170,6 +169,17 @@ return(vec);
 }
 
 
+int escribirEjer4(double *vec,double *x, double *y, int dim, char *cfile){
+FILE *f1=fopen(cfile,"w"); 
+
+if(!f1) return(1); 
+//fprintf(f1,"%d\n",dim);
+for(int i=0;i<dim;i++)
+  fprintf(f1,"%d %lf %lf %lf\n",i,vec[i],x[i],y[i]);
+
+fclose(f1); 
+return(0);
+}
 
 
 

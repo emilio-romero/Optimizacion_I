@@ -56,5 +56,5 @@ double *aproximaPolinomio(int grado, double **data, int npuntos);
 //========================
 
 int es_spd(char *cfile); 
-
+double randx();
 #endif 

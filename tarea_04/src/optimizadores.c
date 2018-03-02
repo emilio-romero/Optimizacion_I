@@ -18,7 +18,7 @@ double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,d
   double *ag=(double*)malloc(mid.n*sizeof(double));
   double **haux=(double**)malloc(mid.n*sizeof(double*));
   for(int i=0;i<mid.n;i++) haux[i]=(double*)calloc(mid.n,sizeof(double));
-  double alpha=0.005;
+  double alpha=0.0005;
   double fr,fk,fkm1,gr,xr;
   double xk; int miter; 
   double *km2=(double*)malloc(mid.n*sizeof(double));
@@ -27,11 +27,13 @@ double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,d
   vector_copiar(mid.x,mid.n,aux.x);
   g(aux,gaux); 
   printf("\nk & $||x_{k+1}-x_k||$ & $||\\nabla f(x_k) ||$ & $f(x_k)$ \\\\\\hline\n");
+  //FILE *f1=fopen("e1mgf.dat","w");
   for(int k=0;k<micond.maxiter;k++){
-    if(strcmp(micond.msg,"StepFijo")==0) alpha=paso_fijo(0.0005);
+    if(strcmp(micond.msg,"StepFijo")==0) alpha=paso_fijo(0.001);
     if(strcmp(micond.msg,"StepHess")==0) {
       h(aux,haux);
       alpha=paso_hessiano(gaux,haux,mid.n);
+      if(alpha<0) alpha=fabs(alpha);
     }
     vector_escalar(alpha,gaux,mid.n,ag); 
     vector_resta(aux.x,ag,mid.n,ast.x);
@@ -41,6 +43,7 @@ double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,d
     xr=Norma_2_vector(dx,ast.n);
     if(strcmp(micond.msg,"StepAprox")==0){
       alpha=paso_aproximacion(fkm1,fk,alpha,gaux,mid.n);
+      if(alpha<0) alpha=fabs(alpha);
     } 
     g(ast,gaux); 
     gr=Norma_2_vector(gaux,mid.n);
@@ -53,6 +56,7 @@ double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,d
     fr=fabs(fkm1-fk); 
     if(1<fabs(fk)) fr=fr/fabs(fk);
     if(1<fabs(xk)) xr=xr/fabs(xk);
+    //fprintf(f1,"%lf %lf %lf\n",ast.x[0],ast.x[1],fkm1);
     if(fr<micond.tolf || gr<micond.tolg || xr<micond.tolx){ 
       miter=k; 
       //vector_copiar(aux.x,mid.n,km2);
@@ -63,6 +67,7 @@ double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,d
       vector_copiar(ast.x,mid.n,aux.x);
   miter=k;
   }
+  //fclose(f1);
   datos am2; am2.n=aux.n; 
   if(mid.y!=NULL){
     am2.y=(double*)malloc(mid.n*sizeof(double));
