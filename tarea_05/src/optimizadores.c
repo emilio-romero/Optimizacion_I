@@ -118,3 +118,196 @@ double paso_aproximacion(double f, double fk, double ak, double *g,int n){
   aux=aux/den;
 
 return(aux);}
+
+
+double *SteepestDescent2(double(*f)(datos),int(*g)(datos,double*),datos x, Condiciones mc){
+datos aux,ast; 
+
+aux.n=x.n; ast.n=x.n; 
+aux.x=(double*)malloc(aux.n*sizeof(double));
+ast.x=(double*)malloc(ast.n*sizeof(double));
+double paso,fk;
+double *gk=(double*)malloc(aux.n*sizeof(double));
+double *gaux=(double*)malloc(aux.n*sizeof(double));
+vector_copiar(x.x,x.n,aux.x);
+double normg,p1=1.0,p2=0.5; 
+  fk=f(aux); 
+  g(aux,gk); 
+  for(int k=0;k<mc.maxiter;k++){
+    /*Comprobaciones de tolerancia*/
+      normg=Norma_2_vector(gk,aux.n);
+      if(normg<=mc.tolg) break; 
+  printf("Iteracion <%d> ",k);
+    /*Calculo del tamanio de paso*/
+    //paso=backtracking(f,aux,fk,gk);
+    /*
+    * Otros pasos (?)*/
+    //paso=quadInterpolation(f,aux,fk,gk,1.0);
+    paso=cubicInterpolation(f,aux,fk,gk,p1,p2);
+    p1=p2; p2=paso;
+    printf("Paso: %lf\n",paso);
+    /**/
+    vector_escalar(paso,gk,aux.n,gaux); //paso por gradiente
+    vector_resta(aux.x,gaux,aux.n,ast.x); //calculo del nuevo xk (x_k+1)
+    fk=f(ast); //actualizacion del valor de la funcion
+    g(ast,gk); //actualizacion del gradiente
+    
+    vector_copiar(ast.x,ast.n,aux.x); //Actualizacion de xk
+  }
+
+free(ast.x);
+return(aux.x);}
+
+double backtracking(double(*f)(datos),datos xk,double fk, double *gk){
+  double a=1.0;
+  double rho=0.5, c1=0.5;
+  double nf; 
+  double gtg=punto(gk,gk,xk.n);
+  double *ng=(double*)malloc(xk.n*sizeof(double));
+  double phia0;  
+  datos nx; 
+  nx.n=xk.n; 
+  nx.x=(double*)malloc(nx.n*sizeof(double));
+  do{
+  a=rho*a; 
+  vector_escalar(a,gk,xk.n,ng);
+  vector_resta(xk.x,ng,xk.n,nx.x);
+  phia0=f(nx);
+}while(phia0>=(fk-c1*a*gtg));
+
+return(a);}
+
+double quadInterpolation(double(*f)(datos),datos xk,double fk, double *gk,double a){
+  double a1,c1=0.5,a0=a; 
+  double gtg=punto(gk,gk,xk.n); 
+  double *ng=(double*)malloc(xk.n*sizeof(double));
+  double phia1;  
+  datos nx; 
+  nx.n=xk.n; 
+  nx.x=(double*)malloc(nx.n*sizeof(double));
+    vector_escalar(a,gk,xk.n,ng);
+    vector_resta(xk.x,ng,xk.n,nx.x);
+    a1=a0*a0*gtg/(2*(f(nx)+a0*gtg-fk));
+  do{
+    if(fabs(a1-a0)<1e-5) break;
+    a0=a1;
+    vector_escalar(a0,gk,xk.n,ng);
+    vector_resta(xk.x,ng,xk.n,nx.x);
+    a1=a0*a0*gtg/(2*(f(nx)+a0*gtg-fk));
+    phia1=f(nx); 
+  }while(phia1>=(fk-c1*a1*gtg));
+
+return(a1);}
+
+
+double cubicInterpolation(double(*f)(datos),datos xk,double fk, double *gk,double pa,double sa){
+double a0=pa,a1=sa,a2,c1=0.5;
+double gtg=punto(gk,gk,xk.n);
+double *ng=(double*)malloc(xk.n*sizeof(double));
+double coef[2],*vec1=(double*)malloc(2*sizeof(double)),\
+  **mat1=(double**)malloc(2*sizeof(double*));
+for(int i=0;i<2;i++) mat1[i]=(double*)malloc(2*sizeof(double));
+double phia2,phia1,phia0,den;  
+  datos nx; 
+  nx.n=xk.n; 
+  nx.x=(double*)malloc(nx.n*sizeof(double));
+  vector_escalar(a0,gk,xk.n,ng);
+  vector_resta(xk.x,ng,xk.n,nx.x);
+  phia0=f(nx); 
+  vector_escalar(a1,gk,xk.n,ng);
+  vector_resta(xk.x,ng,xk.n,nx.x);
+  phia1=f(nx);
+  mat1[0][0]=a0*a0;mat1[0][1]=-a1*a1;   
+  mat1[1][0]=-a0*a0*a0;mat1[1][1]=a1*a1*a1; 
+  vec1[0]=phia1+gtg*a1-fk; vec1[1]=phia0+gtg*a0-fk; 
+  den=1.0/(a1*a1*a0*a0*(a1-a0));
+  matriz_vector_mul(mat1,vec1,2,2,coef);
+  vector_escalar(den,coef,2,coef);
+  a2=(-coef[1]+sqrt(coef[1]*coef[1]+3*coef[0]*gtg))/(3*coef[0]);
+  /*do{
+    if(fabs(a2-a1)<1e-5) break;
+    a0=a1; a1=a2; 
+    vector_escalar(a0,gk,xk.n,ng);
+    vector_resta(xk.x,ng,xk.n,nx.x);
+    phia0=f(nx);
+    vector_escalar(a1,gk,xk.n,ng);
+    vector_resta(xk.x,ng,xk.n,nx.x);
+    phia1=f(nx);
+    mat1[0][0]=a0*a0;mat1[0][1]=-a1*a1;   
+    mat1[1][0]=-a0*a0*a0;mat1[1][1]=a1*a1*a1; 
+    vec1[0]=phia1+gtg*a1-fk; vec1[1]=phia0+gtg*a0-fk; 
+    den=1.0/(a1*a1*a0*a0*(a1-a0));
+    matriz_vector_mul(mat1,vec1,2,2,coef);
+    vector_escalar(den,coef,2,coef);
+ 
+    a2=(-coef[1]+sqrt(coef[1]*coef[1]+3*coef[0]*gtg))/(3*coef[0]);
+   vector_escalar(a2,gk,xk.n,ng);
+   vector_resta(xk.x,ng,xk.n,nx.x);
+   phia2=f(nx);
+  }while(phia2>=(fk-c1*a2*gtg));
+  */
+return(a2);}
+double backtrackinge(double(*f)(datos),datos xk,double fk, double *gk){
+  double a=1.0,a1,a2;
+  double rho=randx(), c1=randx();
+  double nf; 
+  double gtg=punto(gk,gk,xk.n);
+  double *ng=(double*)malloc(xk.n*sizeof(double));
+  double coef[2],*vec1=(double*)malloc(2*sizeof(double)),\
+  **mat1=(double**)malloc(2*sizeof(double*));
+  for(int i=0;i<2;i++) mat1[i]=(double*)malloc(2*sizeof(double));
+  double phia0, phia1,phia2,den;  
+  datos nx; 
+  nx.n=xk.n; 
+  nx.x=(double*)malloc(nx.n*sizeof(double));
+  do{
+  a=rho*a; 
+  vector_escalar(a,gk,xk.n,ng);
+  vector_resta(xk.x,ng,xk.n,nx.x);
+  phia0=f(nx);
+  if(phia0<=(fk-c1*a*gtg) && c1>1e-4){
+    free(ng);
+    free(nx.x);
+    return(a);
+  }else{
+    a1=a*a*gtg/(2*(f(nx)+a*gtg-fk));
+    vector_escalar(a1,gk,xk.n,ng);
+    vector_resta(xk.x,ng,xk.n,nx.x);
+    phia1=f(nx);
+    if(phia1<=(fk-c1*a1*gtg)){
+      free(vec1);
+      free(mat1[0]); free(mat1[1]); free(mat1);
+      free(ng);
+      free(nx.x);
+      return(a1);
+      } else{
+        mat1[0][0]=a*a;mat1[0][1]=-a1*a1;   
+        mat1[1][0]=-a*a*a;mat1[1][1]=a1*a1*a1; 
+        vec1[0]=phia1+gtg*a1-fk; vec1[1]=phia0+gtg*a-fk; 
+        den=1.0/(a1*a1*a*a*(a1-a));
+        matriz_vector_mul(mat1,vec1,2,2,coef);
+        vector_escalar(den,coef,2,coef);
+        a2=(-coef[1]+sqrt(coef[1]*coef[1]+3*coef[0]*gtg))/(3*coef[0]);
+        vector_escalar(a1,gk,xk.n,ng);
+        vector_resta(xk.x,ng,xk.n,nx.x);
+        phia2=f(nx);
+        /*if(phia2<=(fk-c1*a1*gtg)){
+          free(vec1);
+          free(mat1[0]); free(mat1[1]); free(mat1);
+          free(ng);
+          free(nx.x);*/
+          return(a2);
+         /*}else{
+          a=a2; 
+         }*/
+      }
+  }
+
+  }while(f(nx)<=(fk-c1*a*gtg));
+free(vec1);
+free(mat1[0]); free(mat1[1]); free(mat1);
+free(ng);
+free(nx.x);
+return(a);}
+
+
