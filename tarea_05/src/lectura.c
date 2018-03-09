@@ -181,6 +181,24 @@ fclose(f1);
 return(0);
 }
 
+/*
+ * Lectura de csv 
+ */
+double **leerCSV(char *cfile, int nr, int nc){
+double **aux=(double**)malloc(nr*sizeof(double*));
+  for(int i=0;i<nr;i++) aux[i]=(double*)malloc(nc*sizeof(double));
+  char buff[255];
+  int coma; 
+  FILE *f1=fopen(cfile,"r");  
+  for(int i=0;i<nr;i++){
+    for(int j=0;j<nc;j++){
+      fscanf(f1,"%lf",&aux[i][j]);
+      coma=fgetc(f1);
+    }
+  }
+
+  fclose(f1);
+return(aux);}
 
 
 

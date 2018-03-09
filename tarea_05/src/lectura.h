@@ -18,4 +18,9 @@ int escribirVector(double *vec, int dim, char *cfile);
 double *leerVector(char *cfile, int *nr);
 double *leeryk(char *cfile, int *nr,int col);
 int escribirEjer4(double *vec,double *x, double *y, int dim, char *cfile);
+/*
+ * Lectura y escritura de csv
+ * */
+double **leerCSV(char *cfile,int nr, int nc);
+
 #endif 

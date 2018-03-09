@@ -142,9 +142,8 @@ double normg,p1=1.0,p2=0.5;
     //paso=backtracking(f,aux,fk,gk);
     /*
     * Otros pasos (?)*/
-    //paso=quadInterpolation(f,aux,fk,gk,1.0);
-    paso=cubicInterpolation(f,aux,fk,gk,p1,p2);
-    p1=p2; p2=paso;
+    paso=quadInterpolation(f,aux,fk,gk,1.0);
+    //paso=cubicInterpolation(f,aux,fk,gk,1.0,p2);
     printf("Paso: %lf\n",paso);
     /**/
     vector_escalar(paso,gk,aux.n,gaux); //paso por gradiente
@@ -224,7 +223,7 @@ double phia2,phia1,phia0,den;
   matriz_vector_mul(mat1,vec1,2,2,coef);
   vector_escalar(den,coef,2,coef);
   a2=(-coef[1]+sqrt(coef[1]*coef[1]+3*coef[0]*gtg))/(3*coef[0]);
-  /*do{
+  do{
     if(fabs(a2-a1)<1e-5) break;
     a0=a1; a1=a2; 
     vector_escalar(a0,gk,xk.n,ng);
@@ -240,12 +239,12 @@ double phia2,phia1,phia0,den;
     matriz_vector_mul(mat1,vec1,2,2,coef);
     vector_escalar(den,coef,2,coef);
  
-    a2=(-coef[1]+sqrt(coef[1]*coef[1]+3*coef[0]*gtg))/(3*coef[0]);
    vector_escalar(a2,gk,xk.n,ng);
    vector_resta(xk.x,ng,xk.n,nx.x);
+    a2=(-coef[1]+sqrt(coef[1]*coef[1]+3*coef[0]*gtg))/(3*coef[0]);
    phia2=f(nx);
-  }while(phia2>=(fk-c1*a2*gtg));
-  */
+  }while(phia1>=(fk-c1*a1*gtg));
+ free(vec1); free(mat1[0]); free(mat1[1]); free(mat1); 
 return(a2);}
 double backtrackinge(double(*f)(datos),datos xk,double fk, double *gk){
   double a=1.0,a1,a2;
