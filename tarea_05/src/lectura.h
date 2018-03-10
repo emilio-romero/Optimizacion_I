@@ -31,5 +31,5 @@ double **leerCSV(char *cfile,int nr, int nc);
 int *filtradoCSV(double **vdat,int nr, double *deseados, int *nnr);
 
 double **aplicarFiltradoX(double **vdat, int nc, int *deseado, int nr);
-double **aplicarFiltradoY(double **ydat, int *deseado, int nr);
+double *aplicarFiltradoY(double **ydat, int *deseado, int nr);
 #endif 

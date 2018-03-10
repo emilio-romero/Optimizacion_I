@@ -8,8 +8,6 @@ typedef struct{
   double *x; 
   double *y;
   double **dx;
-  double **dy;
-  double *be; 
   double param1; 
   double param2;
 } datos; 

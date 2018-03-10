@@ -321,3 +321,18 @@ double randx(){
   double aux; 
   aux=rand()/((double)RAND_MAX); 
 return(aux);}
+
+int reduccionMatriz(double **A, double *a, int nc, int nr, int nnf, double **aux, double *auxv){
+  int cont=0; 
+  for(int i=0;i<nr;i++){
+    if(cont==(nnf-1)) break;
+    if(randx()<0.5){
+      for(int j=0;j<nc;j++){
+        aux[cont][j]=A[i][j];
+      }
+      auxv[cont]=a[i];
+      cont++; 
+    }
+  }
+return(1);}
+

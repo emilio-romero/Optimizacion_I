@@ -55,6 +55,8 @@ double *aproximaPolinomio(int grado, double **data, int npuntos);
 //= Miscelanea 
 //========================
 
+int reduccionMatriz(double **A,double *a,int nc, int nr, int nnf, double **aux, double *auxv);
+
 int es_spd(char *cfile); 
 double randx();
 #endif 

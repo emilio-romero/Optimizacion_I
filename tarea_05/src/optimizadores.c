@@ -131,20 +131,43 @@ double *gk=(double*)malloc(aux.n*sizeof(double));
 double *gaux=(double*)malloc(aux.n*sizeof(double));
 vector_copiar(x.x,x.n,aux.x);
 double normg,p1=1.0,p2=0.5; 
-  fk=f(aux); 
-  g(aux,gk); 
+/*
+ * Espacio para el ejercicio 2 
+ */
+if(x.obs!=0){
+  printf("Copia de los datos ejercicio 2\n");
+  aux.obs=x.obs; ast.obs=x.obs; 
+  aux.y=(double*)malloc(aux.n*sizeof(double));
+  ast.y=(double*)malloc(ast.n*sizeof(double));
+  vector_copiar(x.y,x.n,aux.y); vector_copiar(x.y,x.n,ast.y);
+  aux.dx=(double**)malloc(aux.obs*sizeof(double*));
+  ast.dx=(double**)malloc(ast.obs*sizeof(double*));
+  for(int i=0;i<x.obs;i++){
+    aux.dx[i]=(double*)malloc(x.n*sizeof(double));
+    ast.dx[i]=(double*)malloc(x.n*sizeof(double));
+    for(int j=0;j<x.n;j++){
+      aux.dx[i][j]=ast.dx[i][j]=x.dx[i][j];
+    }
+  }
+printf("Fin de copiado\n");
+}
+//===========================
+
+fk=f(aux); 
+  g(aux,gk);
   for(int k=0;k<mc.maxiter;k++){
     /*Comprobaciones de tolerancia*/
       normg=Norma_2_vector(gk,aux.n);
       if(normg<=mc.tolg) break; 
   printf("Iteracion <%d> ",k);
     /*Calculo del tamanio de paso*/
-    //paso=backtracking(f,aux,fk,gk);
+    paso=backtracking(f,aux,fk,gk);
+  printf("calculas inicio?\n");
     /*
     * Otros pasos (?)*/
-    paso=quadInterpolation(f,aux,fk,gk,1.0);
+    //paso=quadInterpolation(f,aux,fk,gk,1.0);
     //paso=cubicInterpolation(f,aux,fk,gk,1.0,p2);
-    printf("Paso: %lf\n",paso);
+    //printf("Paso: %lf\n",paso);
     /**/
     vector_escalar(paso,gk,aux.n,gaux); //paso por gradiente
     vector_resta(aux.x,gaux,aux.n,ast.x); //calculo del nuevo xk (x_k+1)
@@ -167,6 +190,19 @@ double backtracking(double(*f)(datos),datos xk,double fk, double *gk){
   datos nx; 
   nx.n=xk.n; 
   nx.x=(double*)malloc(nx.n*sizeof(double));
+if(xk.obs!=0){
+  nx.obs=xk.obs;  
+  nx.y=(double*)malloc(nx.n*sizeof(double));
+  vector_copiar(xk.y,xk.n,nx.y); 
+  nx.dx=(double**)malloc(nx.obs*sizeof(double*));
+  for(int i=0;i<nx.obs;i++){
+    nx.dx[i]=(double*)malloc(xk.n*sizeof(double));
+    for(int j=0;j<xk.n;j++){
+      nx.dx[i][j]=xk.dx[i][j];
+    }
+  }
+}
+
   do{
   a=rho*a; 
   vector_escalar(a,gk,xk.n,ng);

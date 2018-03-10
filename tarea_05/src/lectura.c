@@ -206,9 +206,9 @@ int aux=0;
 int *indices=(int*)malloc(1*sizeof(int));
 for(int i=0;i<nr;i++){
   if(fabs(vdat[i][0]-deseados[0])<1e-4 || fabs(vdat[i][0]-deseados[1])<1e-4){
+    indices[aux]=i;
     aux=aux+1;
     indices=realloc(indices,(aux+1)*sizeof(int));
-    indices[aux]=i;
     //printf("%d\n",*nnr);
   }
 }
@@ -217,23 +217,25 @@ for(int i=0;i<nr;i++){
 return(indices);}
 
 double **aplicarFiltradoX(double **vdat, int nc, int *deseado, int nr){
+//printf("%d %d %d\n",deseado[1],deseado[34], deseado[10]);
+  int ni; 
   double **naux=(double**)malloc(nr*sizeof(double*));
   for(int i=0;i<nr;i++){
     naux[i]=(double*)malloc((nc+1)*sizeof(double));
     naux[i][0]=1.0;
-    printf("hola  \n");
-    for(int j=1;j<=nc;j++){
-      naux[i][j]=vdat[deseado[i]][j-1];
+    ni=deseado[i];
+    //printf("hola  \n");
+    for(int j=0;j<nc;j++){
+      naux[i][j+1]=vdat[ni][j];
     }
   }
 return(naux);}
 
-double **aplicarFiltradoY(double **ydat, int *deseado, int nr){
- printf("entras?, %d\n",nr);
-printf("%d %d %d\n",deseado[1],deseado[34], deseado[10]);
+double *aplicarFiltradoY(double **ydat, int *deseado, int nr){
+ //printf("entras?, %d\n",nr);
 
-double **auxy=(double**)malloc(nr*sizeof(double*));
- printf("sales\n");
- for(int i=0;i<nr;i++) auxy[i]=(double*)malloc(1*sizeof(double));
+double *auxy=(double*)malloc(nr*sizeof(double));
+ //printf("sales\n");
+ for(int i=0;i<nr;i++) auxy[i]=ydat[deseado[i]][0];
 
 return(auxy);}

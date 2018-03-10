@@ -121,9 +121,10 @@ double lLogistic(datos x0){
 double aux=0; 
   double bx,pii;
   for(int i=0;i<x0.obs;i++){
-    bx=punto(x0.be,x0.dx[i],x0.n);
+    bx=punto(x0.x,x0.dx[i],x0.n);
     pii=1.0/(1+exp(-bx));
-    aux+=x0.dy[i][0]*log(pii)+(1-x0.dy[i][0])*log(1.0-pii);
+    aux-=((x0.y[i]-1.0)*bx-log(1.0+exp(-bx)));
+  //  if(i<100) printf("%lf ",pii);
   }
 return(aux);}
 
@@ -134,11 +135,11 @@ double *xs=(double*)malloc(x0.n*sizeof(double));
 double ter,expo;
   for(int i=0;i<x0.n;i++) g[i]=0; 
   for(int k=0;k<x0.obs;k++){
-    bx=punto(x0.dx[k],x0.be,x0.n);
+    bx=punto(x0.dx[k],x0.x,x0.n);
     expo=exp(-bx);
-    ter=x0.dy[k][0]-1.0+expo/(1.0+expo);
+    ter=x0.y[k]-1.0+expo/(1.0+expo);
     vector_escalar(ter,x0.dx[k],x0.n,xs);
-    vector_suma(xs,g,x0.n,g);
+    vector_resta(xs,g,x0.n,g);
   }
 
 return(1);}
