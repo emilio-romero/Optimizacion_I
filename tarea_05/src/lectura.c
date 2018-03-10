@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h> 
-#include <string.h> 
+#include "lectura.h"
 void readParams(int argc, char *argv[],char *cfile, int *maxiter, double *tg, double *tx, double *tf,char *msg){
 if(argc>1) strcpy(cfile,argv[1]);
 if(argc>2) *maxiter=atoi(argv[2]);
@@ -201,4 +199,41 @@ double **aux=(double**)malloc(nr*sizeof(double*));
 return(aux);}
 
 
+/*Filtrado*/
+int *filtradoCSV(double **vdat, int nr, double *deseados, int *nnr){
+*nnr=0;
+int aux=0;
+int *indices=(int*)malloc(1*sizeof(int));
+for(int i=0;i<nr;i++){
+  if(fabs(vdat[i][0]-deseados[0])<1e-4 || fabs(vdat[i][0]-deseados[1])<1e-4){
+    aux=aux+1;
+    indices=realloc(indices,(aux+1)*sizeof(int));
+    indices[aux]=i;
+    //printf("%d\n",*nnr);
+  }
+}
+   //aux=0; 
+  *nnr=aux;
+return(indices);}
 
+double **aplicarFiltradoX(double **vdat, int nc, int *deseado, int nr){
+  double **naux=(double**)malloc(nr*sizeof(double*));
+  for(int i=0;i<nr;i++){
+    naux[i]=(double*)malloc((nc+1)*sizeof(double));
+    naux[i][0]=1.0;
+    printf("hola  \n");
+    for(int j=1;j<=nc;j++){
+      naux[i][j]=vdat[deseado[i]][j-1];
+    }
+  }
+return(naux);}
+
+double **aplicarFiltradoY(double **ydat, int *deseado, int nr){
+ printf("entras?, %d\n",nr);
+printf("%d %d %d\n",deseado[1],deseado[34], deseado[10]);
+
+double **auxy=(double**)malloc(nr*sizeof(double*));
+ printf("sales\n");
+ for(int i=0;i<nr;i++) auxy[i]=(double*)malloc(1*sizeof(double));
+
+return(auxy);}

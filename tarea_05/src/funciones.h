@@ -4,8 +4,12 @@
 
 typedef struct{
   int n; 
+  int obs; 
   double *x; 
   double *y;
+  double **dx;
+  double **dy;
+  double *be; 
   double param1; 
   double param2;
 } datos; 
@@ -20,4 +24,9 @@ int hWood(datos md, double **out);
 double SmoothingModel(datos md);
 int gSModel(datos md, double *out);
 int hSModel(datos md, double **out);
+
+/*Tarea 05*/
+double lLogistic(datos x0);
+int glLogistic(datos x0,double *g);
+
 #endif 

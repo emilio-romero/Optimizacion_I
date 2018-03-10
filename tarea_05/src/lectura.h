@@ -1,5 +1,9 @@
 #ifndef LECTURA_H
 #define LECTURA_H 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include<math.h>
 void readParams(int argc, char *argv[],char *cfile,int *maxiter, double *tg, double *tx, double *tf,char *msg); 
 double *readVector(char *cfile, int *nr);
 int writeVector(double *vec, int dim, char *cfile);
@@ -23,4 +27,9 @@ int escribirEjer4(double *vec,double *x, double *y, int dim, char *cfile);
  * */
 double **leerCSV(char *cfile,int nr, int nc);
 
+
+int *filtradoCSV(double **vdat,int nr, double *deseados, int *nnr);
+
+double **aplicarFiltradoX(double **vdat, int nc, int *deseado, int nr);
+double **aplicarFiltradoY(double **ydat, int *deseado, int nr);
 #endif 

@@ -110,3 +110,36 @@ int hSModel(datos md, double **out){
   out[0][0]=2.0+2.0*md.param1;
   out[md.n-1][md.n-1]=2.0*md.param1+2;
 return(1);}
+
+
+/* Tarea 05: 
+* log verosimilutd del modelo de regresion logistica
+* 
+*/
+
+double lLogistic(datos x0){
+double aux=0; 
+  double bx,pii;
+  for(int i=0;i<x0.obs;i++){
+    bx=punto(x0.be,x0.dx[i],x0.n);
+    pii=1.0/(1+exp(-bx));
+    aux+=x0.dy[i][0]*log(pii)+(1-x0.dy[i][0])*log(1.0-pii);
+  }
+return(aux);}
+
+int glLogistic(datos x0, double *g){
+double bx; 
+double *aux=(double*)malloc(x0.n*sizeof(double)); 
+double *xs=(double*)malloc(x0.n*sizeof(double)); 
+double ter,expo;
+  for(int i=0;i<x0.n;i++) g[i]=0; 
+  for(int k=0;k<x0.obs;k++){
+    bx=punto(x0.dx[k],x0.be,x0.n);
+    expo=exp(-bx);
+    ter=x0.dy[k][0]-1.0+expo/(1.0+expo);
+    vector_escalar(ter,x0.dx[k],x0.n,xs);
+    vector_suma(xs,g,x0.n,g);
+  }
+
+return(1);}
+
