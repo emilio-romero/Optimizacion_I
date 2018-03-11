@@ -123,10 +123,10 @@ double aux=0;
   for(int i=0;i<x0.obs;i++){
     bx=punto(x0.x,x0.dx[i],x0.n);
     pii=1.0/(1+exp(-bx));
-    aux-=((x0.y[i]-1.0)*bx-log(1.0+exp(-bx)));
+    aux=aux+((x0.y[i]-1.0)*bx-log(1.0+exp(-bx)));
   //  if(i<100) printf("%lf ",pii);
   }
-return(aux);}
+return(-1.0*aux);}
 
 int glLogistic(datos x0, double *g){
 double bx; 
@@ -139,8 +139,19 @@ double ter,expo;
     expo=exp(-bx);
     ter=x0.y[k]-1.0+expo/(1.0+expo);
     vector_escalar(ter,x0.dx[k],x0.n,xs);
-    vector_resta(xs,g,x0.n,g);
+    vector_resta(g,xs,x0.n,g);
   }
 
 return(1);}
+
+double errorLogistico(double *be, double **x, double *y, int nc, int obs){
+double aux=0;
+double bx,pii; 
+  for(int k=0;k<obs;k++){
+    bx=punto(be,x[k],nc);
+    pii=1.0/(1+exp(-bx));
+    if(pii>0.5) aux=aux+fabs(1.0-y[k]); 
+    else  aux=aux+fabs(0.0-y[k]); 
+  }
+return(aux/((double)obs));}
 

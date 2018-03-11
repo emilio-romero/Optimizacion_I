@@ -26,5 +26,5 @@ int hSModel(datos md, double **out);
 /*Tarea 05*/
 double lLogistic(datos x0);
 int glLogistic(datos x0,double *g);
-
+double errorLogistico(double *be, double **x,double *y, int nc, int obs);
 #endif 
