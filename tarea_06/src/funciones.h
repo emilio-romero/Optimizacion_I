@@ -1,7 +1,7 @@
 #ifndef FUNCIONES_H 
 #define FUNCIONES_H
 #include "algebralineal.h"
-
+/*Estructura para los datos de entrada*/
 typedef struct{
   int n; 
   int obs; 
@@ -11,7 +11,14 @@ typedef struct{
   double param1; 
   double param2;
 } datos; 
-
+/*Estructura para las condiciones de paro*/
+typedef struct{
+  int maxiter; 
+  double tolg; 
+  double tolx; 
+  double tolf; 
+  char msg[15]; 
+}Condiciones; 
 
 double Rosenbrock(datos md);
 int gRosenbrock(datos md, double *out);

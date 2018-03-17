@@ -59,4 +59,5 @@ int reduccionMatriz(double **A,double *a,int nc, int nr, int nnf, double **aux, 
 
 int es_spd(char *cfile); 
 double randx();
+double minimo2(double a, double b);
 #endif 

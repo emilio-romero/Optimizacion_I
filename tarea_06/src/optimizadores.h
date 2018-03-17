@@ -3,15 +3,6 @@
 #include "algebralineal.h"
 #include "funciones.h"
 #include <string.h>
-/*Estructura para condiciones de paro*/
-typedef struct{
-  int maxiter; 
-  double tolg; 
-  double tolx; 
-  double tolf;
-  char msg[15];
-}Condiciones; 
-
 
 
 double *SteepestDescent(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,double**),datos mid, Condiciones micond);

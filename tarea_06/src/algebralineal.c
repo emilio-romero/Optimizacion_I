@@ -336,3 +336,8 @@ int reduccionMatriz(double **A, double *a, int nc, int nr, int nnf, double **aux
   }
 return(1);}
 
+
+double minimo2(double a, double b){
+ if(a<b) return(a);
+ else return(b);
+}
