@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <float.h>
 #include "lectura.h"
-#include "solucionadores.h"
+//#include "solucionadores.h"
 //=========================
 //= Operaciones elementales
 //========================
@@ -40,14 +40,24 @@ double Norma_inf_vector(double *x, int n);
 //= Soluciondores  
 //========================
 
+/*
+ * Solucionadores basicos 
+ */
+
+int sinferior(double **L, double *b, int n, double *out);
+int ssuperior(double **U, double *b, int n, double *out);
+/*Solucionadores con factoriazaciones */
+int factoLU(double **A, int n, double **L, double **U);
+int solLU(double **A, double *n, int nr, int nc, double *out);
+
 int Chol(double **A, int n, double **out);
 int Cholesky(char *cfile, double**out);
-
+int solLL(double **A,double *b, int nr, int nc, double *out);
 
 //=========================
 //= Minimos cuadrados
 //========================
-double *aproximaPolinomio(int grado, double **data, int npuntos);
+//double *aproximaPolinomio(int grado, double **data, int npuntos);
 
 
 

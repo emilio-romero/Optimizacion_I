@@ -203,9 +203,113 @@ int es_spd(char *cfile){
 return 1;}
 
 /*
+ * Solucionadores basicos: matriz inferior, matriz superior 
+ */
+int sinferior(double **L, double *b, int n, double *out){
+for(int i=0;i<n;i++) out[i]=0; 
+double tol=1e-9; 
+double suma; 
+for(int i=0;i<n;i++){
+  if(fabs(L[i][i])<tol){
+    printf("\nEl sistema no tiene soluciones\n");
+    return(0);
+  }
+}
+
+out[0]=b[0]/L[0][0];
+for(int k=1;k<n;k++){
+  suma=0;
+  for(int j=0;j<k;j++){
+    suma+=L[k][j]*out[j]; 
+  }
+  out[k]=(b[k]-suma)/L[k][k];
+}
+
+return(1);}
+
+int ssuperior(double **U,double *b, int n, double *out){
+for(int i=0;i<n;i++) out[i]=0; 
+double tol=10E-10, suma; 
+for(int i=0;i<n;i++){
+  if(fabs(U[i][i])<tol){
+    printf("\nEl sistema no tiene soluciones\n");
+    return(0);
+  }
+}
+out[n-1]=b[n-1]/U[n-1][n-1];
+for(int i=n-2;i>=0;i--){
+  suma=0;
+  for(int j=i;j<n;j++){
+    suma+=U[i][j]*out[j]; 
+  }
+  out[i]=(b[i]-suma)/U[i][i];
+}
+
+return(1);}
+
+
+
+/*
+* Factorizacion LU
+* esta funcion devuelve las matrices L y U de la factorizacion
+*/
+int factoLU(double **A, int n, double **L, double **U){
+  double tol=1E-10, sumal, sumau; 
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      L[i][j]=0; 
+      U[i][j]=0;
+    }
+    U[i][i]=1.0; 
+    L[i][0]=A[i][0]; 
+    U[0][i]=A[0][i]/L[0][0];
+  }
+
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      sumal=0; sumau=0;
+      if(i>=j){
+        for(int k=0;k<j;k++) sumal+=L[i][k]*U[k][j]; 
+        L[i][j]=A[i][j]-sumal; 
+      }
+
+      else{
+        for(int k=0;k<i;k++) sumau+=L[i][k]*U[k][j]; 
+        U[i][j]=(A[i][j]-sumau)/L[i][i]; 
+      }
+    }
+  }
+
+return(1);}
+
+int solLU(double **A,double *b, int nr, int nc,double *out){
+  double **L=(double**)malloc(nr*sizeof(double*));
+  double **U=(double**)malloc(nr*sizeof(double*));
+  double *vaux=(double*)malloc(nr*sizeof(double));
+  for(int i=0;i<nr;i++) {
+     L[i]=(double*)malloc(nc*sizeof(double));
+     U[i]=(double*)malloc(nc*sizeof(double));
+  }
+  factoLU(A,nr,L,U); //Calculo de L y U
+  //Resolver el sistema 
+  sinferior(L,b,nr,vaux);
+  ssuperior(U,vaux,nr,out);
+
+  for(int i=0;i<nr;i++){ 
+    free(L[i]);
+    free(U[i]);
+  }
+  free(L);
+  free(U);
+  free(vaux);
+return(1);}
+
+
+/*
 * Factorizacion Cholesky
 * esta funcion devuelve la matriz L de la factorizacion
 */
+
 
 int Chol(double **A, int n, double **out){
   double restakj=0; 
@@ -281,13 +385,39 @@ int Cholesky(char *cfile, double **out){
 return(1);}
 
 
+int solLL(double **A,double *b, int nr, int nc,double *out){
+  double **L=(double**)malloc(nr*sizeof(double*));
+  double **Lt=(double**)malloc(nr*sizeof(double*));
+  double *vaux=(double*)malloc(nr*sizeof(double));
+  for(int i=0;i<nr;i++) {
+     L[i]=(double*)malloc(nc*sizeof(double));
+     Lt[i]=(double*)malloc(nc*sizeof(double));
+  }
+  Chol(A,nr,L); //Calculo de L 
+  matriz_transponer(L,nr,nc,Lt); //Calculo de L*
+  //Resolver el sistema 
+  sinferior(L,b,nr,vaux);
+  ssuperior(Lt,vaux,nr,out);
+
+  for(int i=0;i<nr;i++){ 
+    free(L[i]);
+    free(Lt[i]);
+  }
+  free(L);
+  free(Lt);
+  free(vaux);
+return(1);}
+
+
 
 /*
 * Minimos cuadrados 
 * esta funcion devuelve los coeficientes del polinomio
 */
+
+//Correciones por el cambio de LU faltan
 double *aproximaPolinomio(int grado, double **data, int npuntos){
-double *aux; 
+double *aux=(double*)malloc((grado+1)*sizeof(double)); 
 double *y=(double*)malloc((grado+1)*sizeof(double));
 double *g=(double*)malloc(npuntos*sizeof(double));
 double **A=(double**)malloc((npuntos)*sizeof(double*));
@@ -305,7 +435,7 @@ double **AA=(double**)malloc((grado+1)*sizeof(double*));
   }
   matriz_mul(At,A,(grado+1),npuntos,(grado+1),AA);
   matriz_vector_mul(At,g,(grado+1),npuntos,y);
-  aux=factLU(AA,y,(grado+1));  
+  //factLU(AA,y,(grado+1));  
   free(y); free(g); 
   for(int i=0;i<npuntos;i++) free(A[i]);
   for(int i=0;i<=grado;i++) free(At[i]);

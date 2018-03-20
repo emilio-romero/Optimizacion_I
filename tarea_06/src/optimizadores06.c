@@ -8,21 +8,28 @@ double *MRC(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,double**)\
    xk.n=x0.n; xkm1.n=x0.n;
    xk.x=(double*)malloc(xk.n*sizeof(double));
    xkm1.x=(double*)malloc(xkm1.n*sizeof(double));
-  /*Fin de copiado*/
+   vector_copiar(x0.x,xk.n,xk.x);
+   /*Fin de copiado*/
   double fk,fkm1,dk=d0,dkm1,rhok; 
   double *gk=(double*)malloc(x0.n*sizeof(double));
+  double *pck=(double*)malloc(xk.n*sizeof(double));
+  double *pbk=(double*)malloc(xk.n*sizeof(double));
   double *pk=(double*)malloc(xk.n*sizeof(double));
   double **hk=(double**)malloc(xk.n*sizeof(double*));
   for(int i=0;i<xk.n;i++) hk[i]=(double*)malloc(xk.n*sizeof(double));
   for(int k=0;k<mc.maxiter;k++){
+//printf(" %g %g\n",xk.x[0],xk.x[1]);
    fk=f(xk); 
    g(xk,gk);  
    h(xk,hk);
    //Calculo del avance dada la region de confianza
-    pCauchy(hk,gk,dk,xk.n,pk);
+    pCauchy(hk,gk,dk,xk.n,pck);
+    pNewton(hk,gk,xk.n,pbk);
+    pDogleg(pck,pbk,dk,xk.n,pk);
 
    vector_suma(xk.x,pk,xkm1.n,xkm1.x);
    fkm1=f(xkm1);
+   //Calculo de la calidad del modelos (yo no lo entiendos xD)
    rhok=calidadModelo(fk,fkm1,pk,gk,hk,xk.n); 
    // Actualizacion de xk
    if(rhok>eta){
@@ -43,9 +50,9 @@ double *MRC(double(*f)(datos),int(*g)(datos,double*),int(*h)(datos,double**)\
     }
    }
 
-//Criterios de paro 
-if(Norma_2_vector(gk,xk.n)<mc.tolg) break; 
-
+//Criterios de paro
+  if(Norma_2_vector(gk,xk.n)<mc.tolg) break; 
+  vector_copiar(xkm1.x,xk.n,xk.x);  
   }
 
 
@@ -91,10 +98,40 @@ int pCauchy(double **hk,double *gk, double delk,int ndim, double *pc){
   free(bg);
 return(1);}
 
-int pNewton(int ndim, double *pc){
-
+int pNewton(double **hk, double *gk,int ndim, double *pb){
+  double *ng=(double*)malloc(ndim*sizeof(double));
+  vector_escalar(-1.0,gk,ndim,ng);
+  //Resolver el sistema 
+  solLU(hk,ng,ndim,ndim,pb); 
 return(1);}
 
+int pDogleg(double *pc, double *pb, double dk, int ndim, double *out){
+  double nc, nb, naux; 
+  double a,b,c,d,alpha;
+  double *aux=(double*)malloc(ndim*sizeof(double));
+  nc=Norma_2_vector(pc,ndim);
+  nb=Norma_2_vector(pb,ndim);
+  if(dk<=nc){
+    vector_escalar(dk/nc,pc,ndim,out);
+  }
+  else if(dk>=nb){
+    vector_copiar(pb,ndim,out);
+  }
+  else{
+    a=nc*nc; 
+    b=nb*nb;
+    vector_resta(pc,pb,ndim,aux);
+    naux=Norma_2_vector(aux,ndim);
+    naux=naux*naux; 
+    d=(a+b-c)/2; 
+    alpha=(b-dk*dk)/(b-d+sqrt(d*d-a*b+dk*dk*c));
+    vector_escalar(alpha,pc,ndim,out); 
+    vector_escalar((1.0-alpha),pb,ndim,aux);
+    vector_suma(aux,out,ndim,out);
+  }
+
+free(aux);
+return(1);}
 
 double calidadModelo(double fk, double fkm1, double *pk,double *gk, double **hk,int ndim){
   double aux; 
