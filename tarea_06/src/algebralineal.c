@@ -1,7 +1,36 @@
 #include "algebralineal.h"
+
+/*
+ * Crea un vector de tamanio n y llena de ceros y
+ * libera vectores (no necesita la cantidad de elementos)
+ */
+double *crear_vector(int n){
+  double *aux=(double*)malloc(n*sizeof(double));
+  for(int i=0;i<n;i++) aux[i]=0.0; 
+  return(aux);
+}
+
+//int liberar_vector();
+// Se omitio porque un free() es mas sencillo 
+/*
+ * Crea una matriz de tamanio nr x nc y llena de ceros y
+ * libera matrices se le da la cantidad de filas
+ */
+double **crear_matriz(int nr, int nc){
+  double **aux=(double**)malloc(nr*sizeof(double*));
+  for(int i=0;i<nr;i++) aux[i]=(double*)calloc(nc,sizeof(double));
+  return(aux);
+}
+
+int liberar_matriz(double **x, int nr){
+  for(int i=0;i<nr;i++) free(x[i]); 
+  free(x);
+return(1);}
+
 /*
 * Producto punto de dos vectores de tamanio n 
 */
+
 double punto(double *a, double *b, int n){
   double suma=0; 
   for(int i=0;i<n;i++){

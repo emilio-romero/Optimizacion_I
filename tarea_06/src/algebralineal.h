@@ -6,6 +6,18 @@
 #include <float.h>
 #include "lectura.h"
 //#include "solucionadores.h"
+
+/*===============================================
+ * Creacion y liberacion de matrices y vectores
+ *===============================================
+ */
+double *crear_vector(int n);
+double **crear_matriz(int nr, int nc);
+
+//int liberar_vector(double *x);
+int liberar_matriz(double **x, int nr);
+
+
 //=========================
 //= Operaciones elementales
 //========================
