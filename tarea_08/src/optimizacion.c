@@ -6,14 +6,16 @@ int NLSNewton(int(*F)(double *x, int n, double *out),int(*J)(double *x, int n, d
   double *sk=crear_vector(n);
   double *fk=crear_vector(n);
   double **jk=crear_matriz(n,n);
-  double nf; 
+  double nf,kappa; 
   for(int k=0;k<maxiter;++k){
-    F(xk,n,fk); vector_escalar(-1.0,fk,n,fk); 
+    F(xk,n,fk); 
     nf=Norma_2_vector(fk,n);
+    vector_escalar(-1.0,fk,n,fk); 
     if(nf<tol) break; 
     J(xk,n,jk);
     solLU(jk,fk,n,n,sk);
     vector_suma(xk,sk,n,xk);
+    kappa=numero_condicion(jk,n);
   }
 
   free(sk);
@@ -21,6 +23,44 @@ int NLSNewton(int(*F)(double *x, int n, double *out),int(*J)(double *x, int n, d
   free(fk); 
   liberar_matriz(jk,n);
 return(1);}
+int NLSBroyden(int(*F)(double *x, int n, double *out),double **A0,
+    double *x0, int n, int maxiter, double tol){
+  double *xk=crear_vector(n);
+  double *sk=crear_vector(n);
+  double *yk=crear_vector(n);
+  double *fk=crear_vector(n);
+  double *auxv=crear_vector(n);
+  double **Ak=crear_matriz(n,n);
+  double **auxm=crear_matriz(n,n);
+  double nf,kappa; 
+  matriz_copiar(A0,n,n,Ak);
+  F(xk,n,fk);  
+  for(int k=0;k<maxiter;++k){
+    kappa=numero_condicion(Ak,n);
+    nf=Norma_2_vector(fk,n);
+    if(nf<tol) break; 
+    vector_escalar(-1.0,fk,n,fk); 
+    solLU(Ak,fk,n,n,sk);
+    vector_suma(xk,sk,n,xk);
+    vector_copiar(fk,n,yk);
+    F(xk,n,fk);
+    vector_suma(fk,yk,n,yk);
+    //Actualizar A_k 
+    matriz_vector_mul(Ak,sk,n,n,auxv);
+    vector_resta(yk,auxv,n,auxv);
+    vector_escalar(punto(sk,sk,n),auxv,n,auxv);
+    vector_vector_mul(auxv,sk,n,auxm);
+    matriz_suma(Ak,auxm,n,n,Ak);
+  }
+  free(auxv);
+  free(sk);
+  free(yk);
+  free(xk); 
+  free(fk); 
+  liberar_matriz(Ak,n);
+  liberar_matriz(auxm,n);
+return(1);}
+
 
 
 

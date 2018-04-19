@@ -71,6 +71,21 @@ int vector_copiar(double *original, int n, double *copia){
     copia[i]=original[i];
 return(1);}
 /*
+ * Multiplicacion de un vector por otro transpuesto
+ * x * y^t 
+ * devuelve una matriz 
+ */
+int vector_vector_mul(double *x, double *y, int n, double **out){
+  for(int i=0;i<n;++i){
+    for(int j=0;j<n;++j){
+      out[i][j]=x[i]*y[j];
+    }
+  }
+return(1);}
+
+
+
+/*
 * Producto de una matriz por un vector, devuelve un vector 
 * m es para filas de la matriz y n para las columnas de la matriz
 * n tambien son las filas del vector
@@ -168,6 +183,26 @@ int matriz_ceros(int nr, int nc, double **out){
     }
   }
 return(1);}
+/*
+ * Calcula la inversa de la matriz  A de nxn 
+ *
+ */
+
+int matriz_inversa(double **A, int n, double **out){
+  double *auxv=crear_vector(n);
+  double *sole=crear_vector(n);
+  for(int e=0;e<n;++e){
+    auxv[e]=1.0;
+    solLU(A,auxv,n,n,sole);
+    for(int j=0;j<n;++j){
+      out[j][e]=sole[j]; 
+    }
+    auxv[e]=0.0;
+  }
+  free(auxv);
+  free(sole);
+return(1);}
+
 
 /*
 * Calcula la norma 1 de una matriz 
@@ -251,6 +286,20 @@ int es_spd(char *cfile){
   }
   /*Liberacion de memoria*/
 return 1;}
+/* Calcula el numero de condicion \kappa de una matriz A de nxn 
+ *
+ */
+double numero_condicion(double **A, int n){
+  double aux; 
+  double **Ai=crear_matriz(n,n);
+  double nA,nAi; 
+  Norma_1_matriz(A,n,n,&nA);
+  matriz_inversa(A,n,Ai);
+  Norma_1_matriz(Ai,n,n,&nAi); 
+  aux=nA*nAi;
+return(aux);}
+
+
 
 /*
  * Solucionadores basicos: matriz inferior, matriz superior 

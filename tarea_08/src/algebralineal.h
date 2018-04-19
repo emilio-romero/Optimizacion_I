@@ -29,6 +29,7 @@ int vector_suma(double *x, double *y, int n, double *out);
 int vector_resta(double *x, double *y, int n, double *out);
 int vector_escalar(double a, double *x,int n,double *out);
 int vector_copiar(double *original, int n, double *copia);
+int vector_vector_mul(double *x,double *y, int n, double **out);
 /*
  * Operaciones con matrices
  * */
@@ -40,6 +41,7 @@ int matriz_copiar(double **original, int nr, int nc, double **copia);
 int matriz_transponer(double **original, int nr, int nc, double **copia);
 int matriz_escalar(double a, double **A, int nr, int nc, double **out);
 int matriz_ceros(int nr, int nc, double **out);
+int matriz_inversa(double **A, int n, double **out);
 //=========================
 //= Normas 
 //========================
@@ -49,6 +51,11 @@ int Norma_1_matriz(double **A, int nr, int nc, double *out);
 double Norma_1_vector(double *x, int n);
 double Norma_2_vector(double *x, int n);
 double Norma_inf_vector(double *x, int n);
+//=========================
+//= Numeros de condicion 
+//========================
+double numero_condicion(double **A, int n);
+
 
 //=========================
 //= Soluciondores  
