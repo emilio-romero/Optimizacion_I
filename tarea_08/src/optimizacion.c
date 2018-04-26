@@ -1,7 +1,7 @@
 #include "optimizacion.h"
 
 int NLSNewton(int(*F)(double *x, int n, double *out),int(*J)(double *x, int n, double **out),
-    double *x0, int n, int maxiter, double tol){
+    double *x0, int n, int maxiter, double tol,double *out){
   double *xk=crear_vector(n);
   double *sk=crear_vector(n);
   double *fk=crear_vector(n);
@@ -16,15 +16,18 @@ int NLSNewton(int(*F)(double *x, int n, double *out),int(*J)(double *x, int n, d
     solLU(jk,fk,n,n,sk);
     vector_suma(xk,sk,n,xk);
     kappa=numero_condicion(jk,n);
+    printf("%d ",k);
+    for(int i=0;i<n;i++) printf("%lf ",xk[i]);
+    printf("%g %g\n",nf,kappa);
   }
-
+  vector_copiar(xk,n,out);
   free(sk);
   free(xk); 
   free(fk); 
   liberar_matriz(jk,n);
 return(1);}
 int NLSBroyden(int(*F)(double *x, int n, double *out),double **A0,
-    double *x0, int n, int maxiter, double tol){
+    double *x0, int n, int maxiter, double tol,double *out){
   double *xk=crear_vector(n);
   double *sk=crear_vector(n);
   double *yk=crear_vector(n);
@@ -51,7 +54,11 @@ int NLSBroyden(int(*F)(double *x, int n, double *out),double **A0,
     vector_escalar(punto(sk,sk,n),auxv,n,auxv);
     vector_vector_mul(auxv,sk,n,auxm);
     matriz_suma(Ak,auxm,n,n,Ak);
+    printf("%d ",k);
+    for(int i=0;i<n;i++) printf("%lf ",xk[i]);
+    printf("%lf %lf\n",nf,kappa);
   }
+  vector_copiar(xk,n,out);
   free(auxv);
   free(sk);
   free(yk);
