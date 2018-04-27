@@ -95,17 +95,17 @@ int BFGS(double(*f)(double*,int),int(*g)(double*,int,double*),double **H0, doubl
     if(normg<tol) break; 
     
     fk=f(xk,n);
-    printf("%1.4lf ",fk);
+    printf("%1.4lf\n ",fk);
     matriz_vector_mul(Hk,gk,n,n,pk);
     vector_escalar(-1.0,pk,n,pk);
-    alp=backtracking(f,xk,fk,gk,pk,n);
+    alp=backtracking(f,g,xk,fk,gk,pk,n);
     vector_zapyx(xk,alp,pk,n,xkm1);
 
     g(xkm1,n,gkm1);
     vector_resta(xkm1,xk,n,sk);
     vector_resta(gkm1,gk,n,yk);
     denrho=punto(yk,sk,n);
-    if(denrho>1e-4){
+    if(denrho>1e-8){
       rhok=1.0/denrho;
       vector_vector_mul(sk,sk,n,ss);matriz_escalar(rhok,ss,n,n,ss);
       vector_vector_mul(sk,yk,n,sy);matriz_escalar(rhok,ss,n,n,sy);
@@ -134,11 +134,14 @@ int BFGS(double(*f)(double*,int),int(*g)(double*,int,double*),double **H0, doubl
   liberar_matriz(Haux,n);
 return(1);}
 
-double backtracking(double(*f)(double*,int),double *xk, double fk, double *gk,double *pk, int n){
-  double alpha=1.0, c=1e-4, rho=0.5; 
-  double fn, aux=c*punto(gk,pk,n); 
+double backtracking(double(*f)(double*,int),int(*g)(double*,int,double*),double *xk, 
+        double fk, double *gk,double *pk, int n){
+  double alpha=1.0, c1=1e-4, rho=0.8,c2=0.9; 
+  double fn, aux=punto(gk,pk,n); 
   double *nx=crear_vector(n);
   double *np=crear_vector(n);
+  double *ng=crear_vector(n);
+  double ngp; 
   int count=0; 
   do{
     count++;
@@ -146,9 +149,12 @@ double backtracking(double(*f)(double*,int),double *xk, double fk, double *gk,do
     vector_escalar(alpha,pk,n,np);
     vector_suma(xk,np,n,nx);
     fn=f(nx,n);
-  }while(fn>(fk+alpha*aux) );
+    g(nx,n,ng);
+    ngp=punto(ng,pk,n);
+  }while(fn>(fk+alpha*c1*aux) && fabs(ngp)>fabs(c2*aux));
   free(nx); 
   free(np);
+  free(ng);
 return(alpha);}
 
 
