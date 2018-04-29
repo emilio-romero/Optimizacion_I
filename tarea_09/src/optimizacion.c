@@ -87,36 +87,53 @@ int BFGS(double(*f)(double*,int),int(*g)(double*,int,double*),double **H0, doubl
   double **Iys=crear_matriz(n,n);
   double **Isy=crear_matriz(n,n);
   double **Haux=crear_matriz(n,n);
+  double pg,pss; 
+  double lamb1, lamb2;
   vector_copiar(x0,n,xk);
   matriz_copiar(H0,n,n,Hk);
   g(xk,n,gk);
+
   for(int k=0;k<maxiter;++k){
     normg=Norma_2_vector(gk,n);
+    fk=f(xk,n);
     if(normg<tol) break; 
     
-    fk=f(xk,n);
-    printf("%1.4lf\n ",fk);
     matriz_vector_mul(Hk,gk,n,n,pk);
     vector_escalar(-1.0,pk,n,pk);
+    pg=punto(pk,gk,n);
+    while(pg>0){
+    //if(pg>0){  
+      lamb1=1e-5 + (pg/punto(gk,gk,n));
+      matriz_diag_suma(lamb1,Hk,n,n,Hk);
+      matriz_vector_mul(Hk,gk,n,n,pk);
+      vector_escalar(-1.0,pk,n,pk);
+      pg=punto(pk,gk,n);
+    }
     alp=backtracking(f,g,xk,fk,gk,pk,n);
-    vector_zapyx(xk,alp,pk,n,xkm1);
+    vector_zapyx(xk,alp,pk,n,xkm1); //xkm1=xk+alp*pk
+    g(xkm1,n,gkm1);// Gradiente en xkm1
 
-    g(xkm1,n,gkm1);
-    vector_resta(xkm1,xk,n,sk);
-    vector_resta(gkm1,gk,n,yk);
-    denrho=punto(yk,sk,n);
-    if(denrho>1e-8){
+    vector_resta(xkm1,xk,n,sk);//Calculo de s_k
+    vector_resta(gkm1,gk,n,yk);//Calculo de y_k 
+    denrho=punto(yk,sk,n); //Calculo de y_k^ts_k 
+    pss=punto(sk,sk,n);
+    printf("%d & %2.2lf & %2.2lf & %g & %g\n ",k,xk[0],xk[1],fk,normg);
+    if(denrho>0){
       rhok=1.0/denrho;
-      vector_vector_mul(sk,sk,n,ss);matriz_escalar(rhok,ss,n,n,ss);
-      vector_vector_mul(sk,yk,n,sy);matriz_escalar(rhok,ss,n,n,sy);
-      vector_vector_mul(yk,sk,n,ys);matriz_escalar(rhok,ss,n,n,ys);
-      matriz_identidad(n,n,Iys);
-      matriz_resta(Iys,ys,n,n,Iys);
-      matriz_identidad(n,n,Isy);
-      matriz_resta(Isy,sy,n,n,Isy);
-      matriz_mul(Isy,Hk,n,n,n,Haux);
-      matriz_mul(Haux,Iys,n,n,n,Hk);
-      matriz_suma(Hk,ss,n,n,Hk);
+      vector_vector_mul(sk,sk,n,ss);matriz_escalar(rhok,ss,n,n,ss);//rho ss^t
+      vector_vector_mul(sk,yk,n,sy);matriz_escalar(rhok,sy,n,n,sy);// rho sy^t
+      vector_vector_mul(yk,sk,n,ys);matriz_escalar(rhok,ys,n,n,ys);//rho ys^t
+      matriz_identidad(n,n,Iys);//I
+      matriz_resta(Iys,ys,n,n,Iys);//I-rho ys^t
+      matriz_identidad(n,n,Isy);//I
+      matriz_resta(Isy,sy,n,n,Isy);//I-rho sy^t
+      matriz_mul(Isy,Hk,n,n,n,Haux);//(I-rho sy^t)H_k 
+      matriz_mul(Haux,Iys,n,n,n,Hk);//(I-rho sy^t)H_k(I-rho ys^t)
+      matriz_suma(Hk,ss,n,n,Hk);//(I-sy^t)H_k(I-ys^t)+rho ss^t
+    }
+    else{
+      lamb2=1e-5-(denrho/pss);
+      matriz_diag_suma(lamb2,Hk,n,n,Hk);
     }
     vector_copiar(xkm1,n,xk);
     vector_copiar(gkm1,n,gk);
@@ -136,13 +153,14 @@ return(1);}
 
 double backtracking(double(*f)(double*,int),int(*g)(double*,int,double*),double *xk, 
         double fk, double *gk,double *pk, int n){
-  double alpha=1.0, c1=1e-4, rho=0.8,c2=0.9; 
+  double alpha=0.9, c1=1e-4, rho=0.5,c2=0.9; 
   double fn, aux=punto(gk,pk,n); 
   double *nx=crear_vector(n);
   double *np=crear_vector(n);
   double *ng=crear_vector(n);
   double ngp; 
   int count=0; 
+  alpha=alpha/rho; 
   do{
     count++;
     alpha=rho*alpha; 
@@ -150,8 +168,8 @@ double backtracking(double(*f)(double*,int),int(*g)(double*,int,double*),double 
     vector_suma(xk,np,n,nx);
     fn=f(nx,n);
     g(nx,n,ng);
-    ngp=punto(ng,pk,n);
-  }while(fn>(fk+alpha*c1*aux) && fabs(ngp)>fabs(c2*aux));
+    //ngp=punto(ng,pk,n);
+  }while(fn>(fk+alpha*c1*aux) && count<5500);
   free(nx); 
   free(np);
   free(ng);

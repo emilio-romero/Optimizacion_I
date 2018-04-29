@@ -215,10 +215,28 @@ return(1);}
 * Llena una matriz out con unos en la diagonal y ceros en las demas partes
 */ 
 int matriz_identidad(int nr, int nc, double **out){
+  
   for(int i=0;i<nr;++i){ 
+    for(int j=0;j<nc;++j){
+      out[i][j]=0.0;
+    }
     out[i][i]=1.0;
   }
 return(1);}
+
+/*
+ * Suma (o resta de acuerdo al signo) lamb en la diagonal de A
+ *
+ */
+
+int matriz_diag_suma(double lamb,double **A, int nr, int nc,double **out){
+
+  for(int i=0;i<nr;++i){
+    out[i][i]=A[i][i]+lamb; 
+  }
+
+return(1);}
+
 /*
 * Calcula la norma 1 de una matriz 
 */
@@ -253,8 +271,9 @@ return(aux);}
  */
 double Norma_2_vector(double *x, int n){
   double aux=0; 
-  for(int i=0;i<n;i++)
-    aux+=x[i]*x[i];
+  for(int i=0;i<n;++i){
+    aux=aux+x[i]*x[i];
+  }
   aux=sqrt(aux);
 return(aux);} 
 

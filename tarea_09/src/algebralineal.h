@@ -44,6 +44,7 @@ int matriz_escalar(double a, double **A, int nr, int nc, double **out);
 int matriz_ceros(int nr, int nc, double **out);
 int matriz_inversa(double **A, int n, double **out);
 int matriz_identidad(int nr, int nc, double **out);
+int matriz_diag_suma(double lamb,double **A, int nr, int nc,double **out);
 //=========================
 //= Normas 
 //========================
